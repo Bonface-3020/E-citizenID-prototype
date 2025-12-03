@@ -1,7 +1,6 @@
 {% extends "Users/base.html" %}
 
 {% block content %}
-<!-- Centered Header -->
 <div class="text-center mb-5">
     <h1 class="text-ecitizen-green fw-bold">User Dashboard</h1>
     <p class="text-muted">Manage your identity applications efficiently</p>
@@ -12,18 +11,10 @@
         <div class="card shadow-lg border-0">
             <div class="card-header bg-white border-0 pt-4 px-4">
                 <ul class="nav nav-pills nav-fill" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active fw-bold" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab">My Profile</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link fw-bold" id="pills-new-tab" data-bs-toggle="pill" data-bs-target="#pills-new" type="button" role="tab">New ID Application</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link fw-bold" id="pills-replace-tab" data-bs-toggle="pill" data-bs-target="#pills-replace" type="button" role="tab">Replacement ID</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link fw-bold" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab">Application History</button>
-                    </li>
+                    <li class="nav-item" role="presentation"><button class="nav-link active fw-bold" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab">My Profile</button></li>
+                    <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="pills-new-tab" data-bs-toggle="pill" data-bs-target="#pills-new" type="button" role="tab">New ID Application</button></li>
+                    <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="pills-replace-tab" data-bs-toggle="pill" data-bs-target="#pills-replace" type="button" role="tab">Replacement ID</button></li>
+                    <li class="nav-item" role="presentation"><button class="nav-link fw-bold" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab">Application History</button></li>
                 </ul>
             </div>
 
@@ -43,8 +34,6 @@
                                 <div class="p-3 bg-light rounded mb-3 shadow-sm border">
                                     <p class="mb-1 fw-bold text-muted small text-uppercase">Latest Application Status</p>
                                     <p class="mb-0 text-primary fs-5 fw-bold">{{ application_status }}</p>
-
-                                    <!-- NEW: Display Generated ID Number if available -->
                                     {% with latest_app=application_history.first %}
                                         {% if latest_app and latest_app.generated_id_number %}
                                             <hr class="my-3">
@@ -53,9 +42,6 @@
                                         {% endif %}
                                     {% endwith %}
                                 </div>
-                                <div class="alert alert-info border-0 shadow-sm">
-                                    <i class="bi bi-info-circle"></i> Welcome to the E-Citizen portal. Use the tabs above to start a new application.
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -63,25 +49,18 @@
                     <!-- 2. New Applicant Form Tab -->
                     <div class="tab-pane fade" id="pills-new" role="tabpanel" tabindex="0">
                         <h4 class="text-ecitizen-green mb-4 border-bottom pb-2">New ID Application</h4>
-
                         {% if new_app_exists %}
                             <div class="alert alert-warning text-center p-5 border-0 shadow-sm">
                                 <h4>Application Limit Reached</h4>
-                                <p>You already have a New ID application on file. Per government regulations, you can only apply for a New ID once.</p>
+                                <p>You already have a New ID application on file.</p>
                                 <button class="btn btn-outline-warning mt-2" onclick="document.getElementById('pills-history-tab').click()">View History</button>
                             </div>
                         {% else %}
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
-                                {% if new_form.errors %}
-                                    <div class="alert alert-danger">Please correct the errors below.</div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="col-12">{{ new_form.as_p }}</div>
-                                </div>
-                                <div class="d-grid mt-4">
-                                    <button type="submit" name="new_submit" class="btn btn-ecitizen-green btn-lg">Submit Application</button>
-                                </div>
+                                {% if new_form.errors %}<div class="alert alert-danger">Please correct errors.</div>{% endif %}
+                                <div class="row"><div class="col-12">{{ new_form.as_p }}</div></div>
+                                <div class="d-grid mt-4"><button type="submit" name="new_submit" class="btn btn-ecitizen-green btn-lg">Submit Application</button></div>
                             </form>
                         {% endif %}
                     </div>
@@ -90,69 +69,47 @@
                     <div class="tab-pane fade" id="pills-replace" role="tabpanel" tabindex="0">
                         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                              <h4 class="text-ecitizen-green mb-0">Replacement ID Application</h4>
-                             {% if has_valid_id %}
-                                <span class="badge bg-warning text-dark fs-6">Fee: KES 100.00</span>
-                             {% endif %}
+                             {% if has_valid_id %}<span class="badge bg-warning text-dark fs-6">Fee: KES 100.00</span>{% endif %}
                         </div>
 
-                        <!-- LOGIC CHECK: Can they apply for replacement? -->
                         {% if has_valid_id %}
                             <div class="alert alert-info shadow-sm border-0">
-                                <i class="bi bi-wallet2"></i> A replacement fee of <strong>KES 100</strong> is required. An M-Pesa STK push will be sent to the number provided below upon submission.
+                                <i class="bi bi-wallet2"></i> A replacement fee of <strong>KES 100</strong> is required.
                             </div>
 
-                            <form method="POST" enctype="multipart/form-data">
+                            <!-- Form with ID for JS targeting -->
+                            <form method="POST" enctype="multipart/form-data" id="replacementForm">
                                 {% csrf_token %}
-                                {% if replace_form.errors %}
-                                    <div class="alert alert-danger">Please correct the errors below.</div>
-                                {% endif %}
+                                {% if replace_form.errors %}<div class="alert alert-danger">Please correct errors.</div>{% endif %}
+
+                                <!-- HIDDEN INPUT FOR MPESA CODE (Populated by JS) -->
+                                <input type="hidden" name="mpesa_code" id="id_mpesa_code">
 
                                 <div class="row">
                                     <div class="col-md-4 mb-3">{{ replace_form.full_name.label_tag }}{{ replace_form.full_name }}</div>
                                     <div class="col-md-4 mb-3">{{ replace_form.phone_number.label_tag }}{{ replace_form.phone_number }}</div>
                                     <div class="col-md-4 mb-3">{{ replace_form.email.label_tag }}{{ replace_form.email }}</div>
                                 </div>
-
                                 <div class="row">
+                                    <div class="col-md-6 mb-3">{{ replace_form.old_id_number.label_tag }}{{ replace_form.old_id_number }}</div>
                                     <div class="col-md-6 mb-3">
-                                        {{ replace_form.old_id_number.label_tag }}
-                                        {{ replace_form.old_id_number }}
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="{{ replace_form.mpesa_payment_number.id_for_label }}" class="form-label fw-bold text-success">
-                                            M-Pesa Number for Payment
-                                        </label>
+                                        <label class="form-label fw-bold text-success">M-Pesa Number for Payment</label>
                                         {{ replace_form.mpesa_payment_number }}
                                         <small class="text-muted">You will receive a prompt on this phone.</small>
                                     </div>
                                 </div>
-
-                                <div class="mb-3">
-                                    {{ replace_form.passport_picture.label_tag }}
-                                    {{ replace_form.passport_picture }}
-                                    <small class="form-text text-muted">Same requirements as new application.</small>
-                                </div>
-
-                                <div class="mb-4">
-                                    {{ replace_form.police_abstract_form.label_tag }}
-                                    {{ replace_form.police_abstract_form }}
-                                    <small class="form-text text-danger">Upload the scanned copy of the police abstract report.</small>
-                                </div>
+                                <div class="mb-3">{{ replace_form.passport_picture.label_tag }}{{ replace_form.passport_picture }}</div>
+                                <div class="mb-4">{{ replace_form.police_abstract_form.label_tag }}{{ replace_form.police_abstract_form }}</div>
 
                                 <div class="d-grid mt-4">
-                                    <button type="submit" name="replace_submit" class="btn btn-ecitizen-green btn-lg">
+                                    <!-- Button Type=Button to prevent auto-submit -->
+                                    <button type="button" id="btnInitiatePayment" class="btn btn-ecitizen-green btn-lg">
                                         Pay KES 100 & Submit Application
                                     </button>
                                 </div>
                             </form>
                         {% else %}
-                            <!-- REJECTION MESSAGE if no ID exists -->
-                            <div class="alert alert-danger text-center p-5 border-0 shadow-sm">
-                                <h4>Not Eligible for Replacement</h4>
-                                <p class="mb-3">You do not have a valid, approved National ID on record. You cannot request a replacement for an ID you do not possess.</p>
-                                <p class="text-muted">If you have never applied, please use the <strong>New ID Application</strong> tab.</p>
-                                <button class="btn btn-outline-danger mt-2" onclick="document.getElementById('pills-new-tab').click()">Apply for New ID</button>
-                            </div>
+                            <div class="alert alert-danger text-center p-5"><h4>Not Eligible for Replacement</h4><p>You do not have a valid ID on record.</p></div>
                         {% endif %}
                     </div>
 
@@ -161,31 +118,17 @@
                         <h4 class="text-ecitizen-green mb-4 border-bottom pb-2">Your Applications</h4>
                         <div class="table-responsive">
                             <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
+                                <thead class="table-light"><tr><th>ID</th><th>Type</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
                                 <tbody>
                                     {% for app in application_history %}
                                     <tr>
                                         <td>#{{ app.id }}</td>
                                         <td>{{ app.get_application_type_display }}</td>
                                         <td>{{ app.date_submitted|date:"M d, Y" }}</td>
-                                        <td>
-                                            {% if app.status == 'PENDING' %}<span class="badge bg-warning text-dark">Pending</span>
-                                            {% elif app.status == 'APPROVED' %}<span class="badge bg-success">Approved</span>
-                                            {% else %}<span class="badge bg-danger">Declined</span>{% endif %}
-                                        </td>
+                                        <td>{{ app.get_status_display }}</td>
                                         <td><a href="{% url 'app_detail' app.id %}" class="btn btn-sm btn-outline-secondary">View</a></td>
                                     </tr>
-                                    {% empty %}
-                                    <tr><td colspan="5" class="text-center text-muted py-4">No applications found.</td></tr>
-                                    {% endfor %}
+                                    {% empty %}<tr><td colspan="5" class="text-center text-muted">No applications found.</td></tr>{% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -196,4 +139,91 @@
         </div>
     </div>
 </div>
+
+<!-- M-PESA MODAL -->
+<div class="modal fade" id="mpesaModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Payment Initiated</h5>
+      </div>
+      <div class="modal-body text-center p-4">
+        <div class="spinner-grow text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+        <h4 class="mb-3">Check your phone!</h4>
+        <p class="lead">We have sent an M-Pesa prompt to <br><strong id="modalPhoneDisplay">...</strong></p>
+        <p class="text-muted">Please enter your PIN to complete the transaction.</p>
+        <hr>
+        <p class="small">Once you receive the confirmation SMS, click below to finish.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-success btn-lg px-5" id="btnConfirmPayment">
+            I have Paid - Submit Application
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JAVASCRIPT -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const payButton = document.getElementById('btnInitiatePayment');
+        const confirmButton = document.getElementById('btnConfirmPayment');
+        const replacementForm = document.getElementById('replacementForm');
+
+        if (payButton) {
+            payButton.addEventListener('click', function() {
+                const phoneInput = document.querySelector('[name="mpesa_payment_number"]');
+                const phoneNumber = phoneInput.value;
+
+                if (!phoneNumber) { alert("Please enter an M-Pesa phone number."); return; }
+
+                payButton.disabled = true;
+                payButton.innerHTML = "Sending Request...";
+
+                // Call Django API
+                fetch("{% url 'initiate_payment' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ phone_number: phoneNumber })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('modalPhoneDisplay').textContent = phoneNumber;
+                        document.getElementById('id_mpesa_code').value = data.transaction_code;
+
+                        const mpesaModal = new bootstrap.Modal(document.getElementById('mpesaModal'));
+                        mpesaModal.show();
+                    } else {
+                        alert("Payment Error: " + data.message);
+                        payButton.disabled = false;
+                        payButton.innerHTML = "Pay KES 100 & Submit Application";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Network Error. Please try again.");
+                    payButton.disabled = false;
+                    payButton.innerHTML = "Pay KES 100 & Submit Application";
+                });
+            });
+        }
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', function() {
+                // Mimic the submit button name so backend recognizes it
+                const submitInput = document.createElement('input');
+                submitInput.type = 'hidden';
+                submitInput.name = 'replace_submit';
+                submitInput.value = 'true';
+                replacementForm.appendChild(submitInput);
+                replacementForm.submit();
+            });
+        }
+    });
+</script>
 {% endblock content %}

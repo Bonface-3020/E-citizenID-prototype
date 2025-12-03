@@ -132,7 +132,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ----------------------------------------------------------------------
 
 # The URL name or path to redirect to after a successful login.
-# This overrides Django's default behavior, ensuring we go straight to the dashboard.
 LOGIN_REDIRECT_URL = '/dashboard/'
 
 # The URL name or path that requests should be redirected to for login.
