@@ -1,0 +1,41 @@
+{% extends "Admins/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-lg-5 col-md-8 col-sm-10">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-admin-dark text-white text-center rounded-top">
+                <h3 class="mb-0 py-2">Administrator Sign In</h3>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <p class="text-center text-muted">Log in to the Application Review Portal</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
+                    {% endif %}
+
+                    <!-- Form Fields -->
+                    <div class="mb-3">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-4">
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-admin-primary btn-lg">Sign In</button>
+                    </div>
+                    <p class="text-center mt-3">
+                        <a href="{% url 'admin_signup' %}" class="text-admin-dark text-decoration-none fw-bold">Request Admin Account</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

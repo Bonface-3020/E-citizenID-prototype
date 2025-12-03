@@ -1,0 +1,96 @@
+{% extends "Admins/base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 text-center mb-4">
+        <h1 class="text-admin-dark fw-bold">Administrator Dashboard</h1>
+        <p class="text-muted">National Registration & Identity Management</p>
+    </div>
+
+    <!-- Admin Profile Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-header bg-admin-dark text-white">
+                <h5 class="mb-0">My Profile</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                     <img src="https://placehold.co/100x100/004d00/FFFFFF?text=ADM" class="rounded-circle mb-2" alt="Admin">
+                     <h4 class="mb-0">{{ admin_name }}</h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between"><strong>Role:</strong> <span>{{ admin_role }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between"><strong>Dept:</strong> <span>{{ admin_department }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between"><strong>Pending Tasks:</strong> <span class="badge bg-warning text-dark">{{ pending_count }}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application List Table -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="text-admin-dark mb-0">Recent Applications ({{ applications|length }} Total)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Applicant</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications %}
+                            <tr>
+                                <td class="ps-3">#{{ application.id }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ application.full_name }}</div>
+                                    <small class="text-muted">{{ application.applicant.username }}</small>
+                                </td>
+                                <td>{{ application.get_application_type_display }}</td>
+                                <td>
+                                    {% if application.status == 'PENDING' %}
+                                        <span class="badge bg-warning text-dark">{{ application.get_status_display }}</span>
+                                    {% elif application.status == 'APPROVED' %}
+                                        <span class="badge bg-success">{{ application.get_status_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ application.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ application.date_submitted|date:"M d" }}</td>
+                                <td>
+                                    <form method="POST" action="{% url 'admin_dashboard' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="application_id" value="{{ application.id }}">
+
+                                        <a href="{% url 'app_detail' application.id %}" class="btn btn-sm btn-info text-white me-1" title="View Details">View</a>
+
+                                        {% if application.status == 'PENDING' %}
+                                            <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-1" title="Approve">✓</button>
+                                            <button type="submit" name="action" value="decline" class="btn btn-sm btn-danger" title="Decline">✗</button>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-secondary" disabled>Lock</button>
+                                        {% endif %}
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">No applications found in the database.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

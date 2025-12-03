@@ -1,0 +1,110 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-10 col-md-12">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-ecitizen-green text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">Application Details: #{{ application.id }}</h3>
+                        <p class="mb-0 fs-6">Applicant: {{ application.full_name }} ({{ application.applicant.username }})</p>
+                    </div>
+                    <!-- SHOW GENERATED ID IF AVAILABLE -->
+                    {% if application.generated_id_number %}
+                        <div class="text-end">
+                            <span class="d-block small text-white-50">Assigned National ID</span>
+                            <span class="h4 fw-bold mb-0">{{ application.generated_id_number }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body p-4 p-md-5">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <h4>Current Status:</h4>
+                    {% if application.status == 'PENDING' %}
+                        <span class="badge bg-warning text-dark fs-5">{{ application.get_status_display }}</span>
+                    {% elif application.status == 'APPROVED' %}
+                        <span class="badge bg-success fs-5">{{ application.get_status_display }}</span>
+                    {% else %}
+                        <span class="badge bg-danger fs-5">{{ application.get_status_display }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <!-- Column 1: Core Details -->
+                    <div class="col-md-6">
+                        <h5 class="text-ecitizen-green mb-3">Core Information</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item"><strong>Type:</strong> {{ application.get_application_type_display }}</li>
+                            <li class="list-group-item"><strong>Email:</strong> {{ application.email }}</li>
+                            <li class="list-group-item"><strong>Phone:</strong> {{ application.phone_number }}</li>
+                            <li class="list-group-item"><strong>Submitted On:</strong> {{ application.date_submitted|date:"Y-m-d H:i" }}</li>
+                            {% if application.is_paid %}
+                                <li class="list-group-item bg-light text-success">
+                                    <strong>Payment:</strong> PAID (Code: {{ application.mpesa_code }})
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                        {% if application.application_type == 'NEW' %}
+                            <h5 class="text-ecitizen-green mb-3">Place of Birth</h5>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item"><strong>County:</strong> {{ application.county_of_birth }}</li>
+                                <li class="list-group-item"><strong>Sub County:</strong> {{ application.subcounty_of_birth }}</li>
+                                <li class="list-group-item"><strong>Location:</strong> {{ application.location_of_birth }}</li>
+                                <li class="list-group-item"><strong>Sub Location:</strong> {{ application.sublocation_of_birth }}</li>
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Column 2: Documents and Conditional Details -->
+                    <div class="col-md-6">
+                        <h5 class="text-ecitizen-green mb-3">Documents</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <strong>Passport Photo:</strong>
+                                {% if application.passport_picture %}
+                                    <a href="{{ application.passport_picture.url }}" target="_blank" class="text-ecitizen-green">View File</a>
+                                {% else %}
+                                    <span class="text-muted">Not Uploaded</span>
+                                {% endif %}
+                            </li>
+                            {% if application.application_type == 'REPLACEMENT' %}
+                                <li class="list-group-item">
+                                    <strong>Old ID Number:</strong> {{ application.old_id_number }}
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Police Abstract:</strong>
+                                    {% if application.police_abstract_form %}
+                                        <a href="{{ application.police_abstract_form.url }}" target="_blank" class="text-ecitizen-green">View File</a>
+                                    {% else %}
+                                        <span class="text-muted">Not Uploaded</span>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                        {% if application.application_type == 'NEW' %}
+                            <h5 class="text-ecitizen-green mb-3">Parent/Guardian Details</h5>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item"><strong>Name:</strong> {{ application.guardian_name }}</li>
+                                <li class="list-group-item"><strong>ID Number:</strong> {{ application.guardian_id_number }}</li>
+                                <li class="list-group-item"><strong>Phone:</strong> {{ application.guardian_phone }}</li>
+                                <li class="list-group-item"><strong>Death Cert No:</strong> {{ application.death_certificate_number|default:"N/A" }}</li>
+                            </ul>
+                        {% endif %}
+
+                    </div>
+                </div>
+                
+                <div class="d-grid mt-4">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

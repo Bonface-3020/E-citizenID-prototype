@@ -1,0 +1,24 @@
+Django specific files
+
+*.log
+*.pot
+*.pyc
+pycache/
+local_settings.py
+db.sqlite3
+/media/
+
+Environment variables
+
+.env
+
+Virtual environment
+
+/venv/
+/env/
+
+
+OS generated files
+
+.DS_Store
+Thumbs.db

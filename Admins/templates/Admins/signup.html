@@ -1,0 +1,70 @@
+{% extends "Admins/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-6 col-md-8 col-sm-10">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-admin-dark text-white text-center rounded-top">
+                <h3 class="mb-0 py-2">Admin Account Request</h3>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <p class="text-center text-muted">Submit a request to create a new administrative account</p>
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- Display non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Base User Fields (Username, Email, Passwords) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.username.label_tag }}{{ form.username }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.email.label_tag }}{{ form.email }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.password.label_tag }}{{ form.password }}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            {{ form.password2.label_tag }}{{ form.password2 }}
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h6 class="text-admin-dark mb-3">Admin Details</h6>
+                    <!-- Admin Profile Fields (Role, Department) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.role.label_tag }}{{ form.role }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.department.label_tag }}{{ form.department }}
+                        </div>
+                        <div class="col-12 mb-4">
+                            <label class="form-check-label" for="{{ form.is_senior_reviewer.id_for_label }}">
+                                {{ form.is_senior_reviewer }} Is Senior Reviewer
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-admin-primary btn-lg">Register Account</button>
+                    </div>
+                    <p class="text-center mt-3">
+                        Already have an account? <a href="{% url 'admin_signin' %}" class="text-admin-dark text-decoration-none fw-bold">Sign In</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

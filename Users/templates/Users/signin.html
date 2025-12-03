@@ -1,0 +1,41 @@
+{% extends "Users/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-lg-5 col-md-8 col-sm-10">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-ecitizen-green text-white text-center rounded-top">
+                <h3 class="mb-0 py-2">User Sign In</h3>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <p class="text-center text-muted">Access your E-Citizen ID Application Dashboard</p>
+
+                <form method="POST">
+                    {% csrf_token %} <!-- <<<--- THIS IS THE FIX -->
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
+                    {% endif %}
+
+                    <!-- Form Fields -->
+                    <div class="mb-3">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-4">
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-ecitizen-green btn-lg">Sign In</button>
+                    </div>
+                    <p class="text-center mt-3">
+                        Don't have an account? <a href="{% url 'user_signup' %}" class="text-ecitizen-green text-decoration-none fw-bold">Sign Up Here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

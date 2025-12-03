@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Citizen ID Portal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --ecitizen-green: #008000;
+            --ecitizen-light: #f5f5f5;
+        }
+        body {-
+            background-color: var(--ecitizen-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .bg-ecitizen-green { background-color: var(--ecitizen-green) !important; }
+        .text-ecitizen-green { color: var(--ecitizen-green) !important; }
+        .btn-ecitizen-green {
+            background-color: var(--ecitizen-green);
+            border-color: var(--ecitizen-green);
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-ecitizen-green:hover {
+            background-color: #006400;
+            border-color: #006400;
+            color: white;
+        }
+        main { flex: 1; }
+        footer {
+            background-color: #333;
+            color: white;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column h-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-ecitizen-green shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'user_dashboard' %}">E-Citizen ID Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="userNavbar">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link active">Hello, {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-sm btn-outline-light ms-2 px-3 border-0" href="{% url 'user_signout' %}">Sign Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_signin' %}">Sign In</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid py-4">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 text-center">
+        <div class="container">
+            <span class="text-white-50">&copy; 2025 E-Citizen ID Portal. All Rights Reserved.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
