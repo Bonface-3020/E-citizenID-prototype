@@ -52,7 +52,7 @@ class IDApplication(models.Model):
     mpesa_code = models.CharField(max_length=50, null=True, blank=True, help_text="M-Pesa Transaction ID")
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
-    # --- NEW: SYSTEM GENERATED ID ---
+    # ---  SYSTEM GENERATED ID ---
     # This stores the unique ID number generated upon approval of a NEW application.
     generated_id_number = models.CharField(
         max_length=20,
